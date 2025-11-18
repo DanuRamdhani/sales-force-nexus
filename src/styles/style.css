@@ -1,0 +1,318 @@
+/* styles.css
+   Dipakai untuk: Dashboard (beranda-page), LeadList, LeadItem, LeadItemBody, ScoreBadge, StatusPill
+   Import: import './styles.css';
+*/
+
+/* --- Theme variables --- */
+:root{
+  --bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+  --primary: #2563eb;        /* biru utama */
+  --primary-600: #1d4ed8;
+  --success: #16a34a;
+  --danger: #ef4444;
+  --border: #e6e9ee;
+  --glass: rgba(255,255,255,0.6);
+  --shadow: 0 6px 18px rgba(25, 35, 50, 0.08);
+  --radius: 12px;
+  --gap: 12px;
+  --max-width: 980px;
+  --text: #0f172a;
+  --accent: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
+}
+
+/* --- Global resets / helpers --- */
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Layout container */
+.container{
+  width: min(95%, var(--max-width));
+  margin: 28px auto;
+}
+
+/* --- Dashboard / beranda page --- */
+.beranda-page{
+  padding: 20px;
+  margin: 0 auto;
+  width: min(98%, var(--max-width));
+}
+.beranda-page h1{
+  margin: 0 0 16px 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Add button */
+.add-lead-button{
+  display:inline-block;
+  margin: 14px 0 18px 0;
+  padding: 8px 14px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.14);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s;
+}
+.add-lead-button:hover{ transform: translateY(-2px); opacity:.98; }
+.add-lead-button:active{ transform: translateY(0); }
+
+/* --- Lead list container --- */
+.lead-list{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: calc(var(--gap) * 1.1);
+}
+
+/* Small screens: single column, larger screens: two columns */
+@media(min-width:900px){
+  .lead-list{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- Card (Lead item) --- */
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), var(--card-bg));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  display:flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow);
+  transition: transform .14s ease, box-shadow .14s ease;
+  min-height: 84px;
+}
+.card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(25,35,50,0.09);
+}
+
+/* Lead item structure */
+.lead-item{
+  display:flex;
+  align-items:center;
+  width:100%;
+}
+.lead-item__left{
+  width:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.lead-item__main{
+  flex:1;
+  min-width:0; /* allow ellipsis */
+}
+.lead-item__right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* --- LeadItemBody --- */
+.lead-item__body{ 
+  display:block;
+}
+.lead-item__name{
+  margin:0;
+  font-size:1.02rem;
+  font-weight:700;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.lead-item__meta{
+  margin-top:6px;
+  font-size:0.86rem;
+  color:var(--muted);
+}
+.lead-item__description{
+  margin:8px 0 0 0;
+  font-size:0.86rem;
+  color: #374151;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* --- ScoreBadge --- */
+.score-badge, .score-badge--small{
+  display:inline-grid;
+  place-items:center;
+  min-width:44px;
+  height:44px;
+  border-radius:10px;
+  font-weight:700;
+  color:white;
+  font-size:0.95rem;
+  box-shadow: 0 6px 14px rgba(15,23,42,0.08);
+  background: var(--accent);
+}
+
+/* small variant */
+.score-badge--small{
+  min-width:36px;
+  height:36px;
+  font-size:0.85rem;
+  border-radius:8px;
+}
+
+/* optional color-coding via classes */
+.score-badge.low{ background: linear-gradient(135deg,#ef4444,#f97316); }     /* low score */
+.score-badge.medium{ background: linear-gradient(135deg,#f59e0b,#f97316); }
+.score-badge.high{ background: linear-gradient(135deg,#10b981,#06b6d4); }
+
+/* --- StatusPill --- */
+.status-pill{
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:0.78rem;
+  font-weight:600;
+  text-transform:capitalize;
+  border:1px solid rgba(0,0,0,0.04);
+  display:inline-block;
+  min-width:86px;
+  text-align:center;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.04);
+}
+
+/* color variants (you can render these classes from component based on status) */
+.status-pill.open{ background: rgba(16,185,129,0.12); color: var(--success); border-color: rgba(16,185,129,0.18); }
+.status-pill.pending{ background: rgba(59,130,246,0.08); color: var(--primary-600); border-color: rgba(59,130,246,0.12); }
+.status-pill.lost{ background: rgba(239,68,68,0.06); color: var(--danger); border-color: rgba(239,68,68,0.12); }
+.status-pill.unknown{ background: rgba(99,102,241,0.04); color: #374151; }
+
+/* If your StatusPill sets a data attribute: [data-status] styles */
+.status-pill[data-status="open"]{ background: rgba(16,185,129,0.12); color:var(--success); }
+.status-pill[data-status="pending"]{ background: rgba(59,130,246,0.08); color:var(--primary-600); }
+.status-pill[data-status="lost"]{ background: rgba(239,68,68,0.06); color:var(--danger); }
+
+/* --- Detail link --- */
+.lead-item__detail-link{
+  display:inline-block;
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid transparent;
+  text-decoration:none;
+  font-weight:600;
+  font-size:0.85rem;
+  color:var(--primary-600);
+  background:transparent;
+  transition: background .12s ease, color .12s ease, transform .08s;
+}
+.lead-item__detail-link:hover{
+  transform: translateY(-2px);
+  color:#0b63d6;
+  background: rgba(37,99,235,0.06);
+}
+
+/* --- Accessibility and small tweaks --- */
+@media (prefers-reduced-motion: reduce){
+  .card, .add-lead-button, .lead-item__detail-link{ transition:none; transform:none; }
+}
+
+/* --- Empty state (if no leads) --- */
+.lead-list:empty::before{
+  content: "Tidak ada leads. Tambahkan lewat tombol \"Add New Lead\".";
+  display:block;
+  padding:26px;
+  text-align:center;
+  color:var(--muted);
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.6), transparent);
+  border:1px dashed rgba(0,0,0,0.03);
+}
+
+/* --- Utilities --- */
+.text-muted{ color:var(--muted); font-size:0.9rem; }
+.small{ font-size:0.84rem; color:#445; }
+
+/* --- App header --- */
+.app-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 22px;
+  background: linear-gradient(180deg, rgba(6,182,146,0.06), rgba(6,182,146,0.02));
+  border-bottom: 1px solid rgba(6,95,70,0.03);
+  border-radius: 8px;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.app-header__left{ display:flex; align-items:center; gap:12px; min-width:0; }
+.logo{ display:flex; align-items:center; gap:12px; }
+.logo__icon{ width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:10px; }
+.logo__text{ display:flex; flex-direction:column; line-height:1; min-width:0; }
+.logo__title{ font-weight:800; font-size:1.05rem; color: #047857; }
+.logo__subtitle{ font-size:0.86rem; color: var(--muted); margin-top:2px; }
+
+/* Right area */
+.app-header__right{ display:flex; align-items:center; gap:12px; }
+.user-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background: #fff;
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid rgba(6,95,70,0.05);
+  box-shadow: 0 6px 16px rgba(6,95,70,0.03);
+}
+.user-avatar{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  background: linear-gradient(180deg,#06b6d4,#10b981);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:700;
+  font-size:0.9rem;
+}
+.user-info{ display:flex; flex-direction:column; align-items:flex-start; line-height:1; }
+.user-name{ font-weight:700; font-size:0.95rem; color:#0f172a; }
+.user-role{ font-size:0.78rem; color:var(--muted); margin-top:2px; }
+
+/* Logout icon button */
+.logout-btn{
+  border:0;
+  background:transparent;
+  padding:6px;
+  border-radius:8px;
+  margin-left:6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.logout-btn:hover{ background: rgba(6,95,70,0.03); }
+
+/* Responsive: compress header on small screens */
+@media (max-width:720px){
+  .app-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .app-header__right{ width:100%; justify-content:flex-end; }
+}
+
