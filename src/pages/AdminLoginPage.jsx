@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -37,7 +37,7 @@ const AdminLoginPage = () => {
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           toast.success("Admin login berhasil!");
-          navigate("/admin");
+          navigate("/admin" , { replace: true });
         } else {
           toast.error("Hanya admin yang dapat login di halaman ini");
         }
@@ -59,7 +59,7 @@ const AdminLoginPage = () => {
         localStorage.setItem("token", "demo-token");
         localStorage.setItem("user", JSON.stringify(demoUser));
         toast.success("Admin login berhasil (Demo Mode)!");
-        navigate("/admin");
+        navigate("/admin" , { replace: true });
       } else {
         toast.error("Login gagal: " + (error.message || "Terjadi kesalahan"));
       }
@@ -181,7 +181,7 @@ const AdminLoginPage = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => window.location.href = "/login"}
+                  onClick={() => navigate("/login", { replace: true })}
                   className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
                 >
                   Kembali ke Login Biasa
