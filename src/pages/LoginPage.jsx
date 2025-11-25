@@ -193,7 +193,7 @@ const LoginPage = () => {
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => handleQuickLogin("admin@salesportal.com", "admin123")}
+                      onClick={() => navigate("/admin", { replace: true })}
                       className="flex-1 text-xs"
                       data-testid="quick-login-admin"
                     >
