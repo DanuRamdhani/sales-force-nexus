@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RequireAdmin = ({ children }) => {
-  const isAdmin = true; // Replace with actual admin check
+  const navigate = useNavigate();
 
-  if (!isAdmin) {
-    return <div>You do not have access to this page.</div>;
-  }
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) {
+      navigate("/admin/login", { replace: true });
+      return;
+    }
 
+    try {
+      const user = JSON.parse(userStr);
+
+      if (user.role !== "admin") {
+        navigate("/login", { replace: true });
+        return;
+      }
+    } catch (error) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      navigate("/admin/login", { replace: true });
+      return;
+    }
+  }, [navigate]);
   return children;
 };
 
