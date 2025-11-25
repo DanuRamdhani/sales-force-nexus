@@ -105,7 +105,7 @@ const AdminDashboardPage = () => {
             <CardHeader className="pb-3">
               <CardDescription className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
-                Total Users
+                Total Sales
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -147,10 +147,10 @@ const AdminDashboardPage = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 heading-font">
                 <Users className="w-5 h-5" />
-                Manajemen Pengguna
+                Manajemen Sales
               </CardTitle>
               <CardDescription>
-                Kelola akun pengguna, peran, dan permission
+                Kelola akun sales
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -159,7 +159,7 @@ const AdminDashboardPage = () => {
                 className="w-full"
                 disabled
               >
-                Kelola Pengguna
+                Kelola
               </Button>
             </CardContent>
           </Card>
