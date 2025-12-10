@@ -2,14 +2,39 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { toast } from "sonner";
 import {
-  Search, Filter, TrendingUp, Users, Target,
-  Award, LogOut, User, Flame, Wind, Snowflake,
-  CheckCircle, XCircle, Clock, AlertCircle
+  Search,
+  Filter,
+  TrendingUp,
+  Users,
+  Target,
+  Award,
+  LogOut,
+  User,
+  Flame,
+  Wind,
+  Snowflake,
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
+import { clearSession } from "../lib/auth";
 
 const BACKEND_URL = "process.env.REACT_APP_BACKEND_URL";
 const API = `${BACKEND_URL}/api`;
@@ -22,14 +47,14 @@ const DashboardPage = () => {
     bucket: "",
     status: "",
     job: "",
-    has_loan: ""
+    has_loan: "",
   });
 
   // Dummy data for user
   const user = {
     name: "Prasetyo",
-    role: "sales"
-  }
+    role: "sales",
+  };
 
   const leads = [
     // Dummy data for leads
@@ -39,14 +64,15 @@ const DashboardPage = () => {
         name: "Andi Wijaya",
         age: 30,
         job: "management.",
-        balance: 1500000
+        balance: 1500000,
       },
       score: {
         score: 0.85,
         bucket: "hot",
-        explanation: "Peluang tinggi untuk konversi karena profil keuangan yang kuat."
+        explanation:
+          "Peluang tinggi untuk konversi karena profil keuangan yang kuat.",
       },
-      status: "in_progress"
+      status: "in_progress",
     },
     {
       id: 2,
@@ -54,14 +80,14 @@ const DashboardPage = () => {
         name: "Siti Aminah",
         age: 45,
         job: "technician.",
-        balance: 800000
+        balance: 800000,
       },
       score: {
-        score: 0.60,
+        score: 0.6,
         bucket: "warm",
-        explanation: "Peluang sedang, perlu pendekatan lebih lanjut."
+        explanation: "Peluang sedang, perlu pendekatan lebih lanjut.",
       },
-      status: "new"
+      status: "new",
     },
     {
       id: 3,
@@ -69,14 +95,14 @@ const DashboardPage = () => {
         name: "Budi Santoso",
         age: 38,
         job: "entrepreneur.",
-        balance: 500000
+        balance: 500000,
       },
       score: {
-        score: 0.30,
+        score: 0.3,
         bucket: "cold",
-        explanation: "Peluang rendah, profil keuangan kurang mendukung."
+        explanation: "Peluang rendah, profil keuangan kurang mendukung.",
       },
-      status: "closed_lost"
+      status: "closed_lost",
     },
     {
       id: 4,
@@ -84,15 +110,15 @@ const DashboardPage = () => {
         name: "Lina Marlina",
         age: 29,
         job: "services.",
-        balance: 1200000
+        balance: 1200000,
       },
       score: {
         score: 0.75,
         bucket: "warm",
-        explanation: "Peluang baik, tetapi butuh lebih banyak informasi."
+        explanation: "Peluang baik, tetapi butuh lebih banyak informasi.",
       },
-      status: "in_progress"
-    }
+      status: "in_progress",
+    },
   ];
 
   useEffect(() => {
@@ -114,35 +140,43 @@ const DashboardPage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    clearSession();
+    navigate("/login", { replace: true });
   };
 
   const getBucketIcon = (bucket) => {
     switch (bucket) {
-      case "hot": return <Flame className="w-4 h-4" />;
-      case "warm": return <Wind className="w-4 h-4" />;
-      case "cold": return <Snowflake className="w-4 h-4" />;
-      default: return null;
+      case "hot":
+        return <Flame className="w-4 h-4" />;
+      case "warm":
+        return <Wind className="w-4 h-4" />;
+      case "cold":
+        return <Snowflake className="w-4 h-4" />;
+      default:
+        return null;
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case "closed_won": return <CheckCircle className="w-4 h-4" />;
-      case "closed_lost": return <XCircle className="w-4 h-4" />;
-      case "in_progress": return <Clock className="w-4 h-4" />;
-      case "new": return <AlertCircle className="w-4 h-4" />;
-      default: return null;
+      case "closed_won":
+        return <CheckCircle className="w-4 h-4" />;
+      case "closed_lost":
+        return <XCircle className="w-4 h-4" />;
+      case "in_progress":
+        return <Clock className="w-4 h-4" />;
+      case "new":
+        return <AlertCircle className="w-4 h-4" />;
+      default:
+        return null;
     }
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -168,7 +202,9 @@ const DashboardPage = () => {
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold heading-font gradient-text">SalesForce Nexus</h1>
+                <h1 className="text-xl font-bold heading-font gradient-text">
+                  SalesForce Nexus
+                </h1>
                 <p className="text-xs text-gray-600">Lead Management Portal</p>
               </div>
             </div>
@@ -176,8 +212,12 @@ const DashboardPage = () => {
               <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-gray-200">
                 <User className="w-4 h-4 text-gray-600" />
                 <div className="text-left">
-                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {user?.name}
+                  </p>
+                  <p className="text-xs text-gray-500 capitalize">
+                    {user?.role}
+                  </p>
                 </div>
               </div>
               <Button
@@ -197,7 +237,10 @@ const DashboardPage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="card-hover border-l-4 border-l-emerald-500" data-testid="stat-total-leads">
+          <Card
+            className="card-hover border-l-4 border-l-emerald-500"
+            data-testid="stat-total-leads"
+          >
             <CardHeader className="pb-3">
               <CardDescription className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
@@ -205,11 +248,16 @@ const DashboardPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold heading-font text-gray-900">{0}</p>
+              <p className="text-3xl font-bold heading-font text-gray-900">
+                {0}
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="card-hover border-l-4 border-l-red-500" data-testid="stat-hot-leads">
+          <Card
+            className="card-hover border-l-4 border-l-red-500"
+            data-testid="stat-hot-leads"
+          >
             <CardHeader className="pb-3">
               <CardDescription className="flex items-center gap-2">
                 <Flame className="w-4 h-4 text-red-500" />
@@ -217,11 +265,16 @@ const DashboardPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold heading-font text-red-600">{0}</p>
+              <p className="text-3xl font-bold heading-font text-red-600">
+                {0}
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="card-hover border-l-4 border-l-amber-500" data-testid="stat-warm-leads">
+          <Card
+            className="card-hover border-l-4 border-l-amber-500"
+            data-testid="stat-warm-leads"
+          >
             <CardHeader className="pb-3">
               <CardDescription className="flex items-center gap-2">
                 <Wind className="w-4 h-4 text-amber-500" />
@@ -229,11 +282,16 @@ const DashboardPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold heading-font text-amber-600">{0}</p>
+              <p className="text-3xl font-bold heading-font text-amber-600">
+                {0}
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="card-hover border-l-4 border-l-emerald-500" data-testid="stat-closed-won">
+          <Card
+            className="card-hover border-l-4 border-l-emerald-500"
+            data-testid="stat-closed-won"
+          >
             <CardHeader className="pb-3">
               <CardDescription className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-emerald-500" />
@@ -241,7 +299,9 @@ const DashboardPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold heading-font text-emerald-600">{0}</p>
+              <p className="text-3xl font-bold heading-font text-emerald-600">
+                {0}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -251,8 +311,12 @@ const DashboardPage = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="heading-font">Daftar Lead Prioritas</CardTitle>
-                <CardDescription>Lead diurutkan berdasarkan skor tertinggi</CardDescription>
+                <CardTitle className="heading-font">
+                  Daftar Lead Prioritas
+                </CardTitle>
+                <CardDescription>
+                  Lead diurutkan berdasarkan skor tertinggi
+                </CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 <Filter className="w-5 h-5 text-gray-600" />
@@ -272,7 +336,12 @@ const DashboardPage = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Select value={filters.bucket} onValueChange={(value) => setFilters({ ...filters, bucket: value })}>
+              <Select
+                value={filters.bucket}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, bucket: value })
+                }
+              >
                 <SelectTrigger data-testid="filter-bucket">
                   <SelectValue placeholder="Semua Bucket" />
                 </SelectTrigger>
@@ -284,7 +353,12 @@ const DashboardPage = () => {
                 </SelectContent>
               </Select>
 
-              <Select value={filters.status} onValueChange={(value) => setFilters({ ...filters, status: value })}>
+              <Select
+                value={filters.status}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, status: value })
+                }
+              >
                 <SelectTrigger data-testid="filter-status">
                   <SelectValue placeholder="Semua Status" />
                 </SelectTrigger>
@@ -297,7 +371,12 @@ const DashboardPage = () => {
                 </SelectContent>
               </Select>
 
-              <Select value={filters.job} onValueChange={(value) => setFilters({ ...filters, job: value })}>
+              <Select
+                value={filters.job}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, job: value })
+                }
+              >
                 <SelectTrigger data-testid="filter-job">
                   <SelectValue placeholder="Semua Pekerjaan" />
                 </SelectTrigger>
@@ -312,7 +391,12 @@ const DashboardPage = () => {
                 </SelectContent>
               </Select>
 
-              <Select value={filters.has_loan} onValueChange={(value) => setFilters({ ...filters, has_loan: value })}>
+              <Select
+                value={filters.has_loan}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, has_loan: value })
+                }
+              >
                 <SelectTrigger data-testid="filter-loan">
                   <SelectValue placeholder="Status Pinjaman" />
                 </SelectTrigger>
@@ -349,38 +433,58 @@ const DashboardPage = () => {
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       {/* Score Badge */}
                       <div className="flex-shrink-0">
-                        <div className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center ${lead.score.bucket === 'hot' ? 'bg-gradient-to-br from-red-500 to-red-600' :
-                          lead.score.bucket === 'warm' ? 'bg-gradient-to-br from-amber-500 to-amber-600' :
-                            'bg-gradient-to-br from-blue-500 to-blue-600'
-                          }`}>
+                        <div
+                          className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center ${
+                            lead.score.bucket === "hot"
+                              ? "bg-gradient-to-br from-red-500 to-red-600"
+                              : lead.score.bucket === "warm"
+                              ? "bg-gradient-to-br from-amber-500 to-amber-600"
+                              : "bg-gradient-to-br from-blue-500 to-blue-600"
+                          }`}
+                        >
                           {getBucketIcon(lead.score.bucket)}
-                          <span className="text-white text-lg font-bold">{(lead.score.score * 100).toFixed(0)}%</span>
+                          <span className="text-white text-lg font-bold">
+                            {(lead.score.score * 100).toFixed(0)}%
+                          </span>
                         </div>
                       </div>
 
                       {/* Customer Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">{lead.customer.name}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
+                          {lead.customer.name}
+                        </h3>
                         <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
                           <span>{lead.customer.age} tahun</span>
                           <span className="text-gray-300">•</span>
-                          <span className="capitalize">{lead.customer.job.replace('.', '')}</span>
+                          <span className="capitalize">
+                            {lead.customer.job.replace(".", "")}
+                          </span>
                           <span className="text-gray-300">•</span>
                           <span>{formatCurrency(lead.customer.balance)}</span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1 line-clamp-1">{lead.score.explanation}</p>
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                          {lead.score.explanation}
+                        </p>
                       </div>
                     </div>
 
                     {/* Status Badges */}
                     <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                      <span className={`badge-${lead.score.bucket} flex items-center gap-1`}>
+                      <span
+                        className={`badge-${lead.score.bucket} flex items-center gap-1`}
+                      >
                         {getBucketIcon(lead.score.bucket)}
                         {lead.score.bucket}
                       </span>
-                      <span className={`status-${lead.status.replace('_', '-')} flex items-center gap-1`}>
+                      <span
+                        className={`status-${lead.status.replace(
+                          "_",
+                          "-"
+                        )} flex items-center gap-1`}
+                      >
                         {getStatusIcon(lead.status)}
-                        {lead.status.replace('_', ' ')}
+                        {lead.status.replace("_", " ")}
                       </span>
                     </div>
                   </div>

@@ -2,29 +2,29 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearSession, fetchCurrentUser, getStoredUser } from "../lib/auth";
 
-const RequireAdmin = ({ children }) => {
+const RequireSales = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
 
-    const verifyAdmin = async () => {
+    const verifySales = async () => {
       const cachedUser = getStoredUser();
-      if (cachedUser?.role === "admin" || cachedUser?.role === "super_admin") {
+      if (cachedUser?.role === "sales") {
         return;
       }
 
       const user = await fetchCurrentUser();
       if (!active) return;
 
-      if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
+      if (!user || user.role !== "sales") {
         clearSession();
         navigate("/login", { replace: true });
         return;
       }
     };
 
-    verifyAdmin();
+    verifySales();
 
     return () => {
       active = false;
@@ -33,4 +33,4 @@ const RequireAdmin = ({ children }) => {
   return children;
 };
 
-export default RequireAdmin;
+export default RequireSales;
