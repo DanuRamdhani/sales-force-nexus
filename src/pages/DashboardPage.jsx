@@ -40,6 +40,7 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [leads, setLeads] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     bucket: "",
@@ -48,7 +49,34 @@ const DashboardPage = () => {
     has_loan: "",
   });
 
-  const leads = [
+  // Stats computed from leads data
+  const stats = {
+    total: leads.length,
+    hot: leads.filter((l) => l.score?.bucket === "hot").length,
+    warm: leads.filter((l) => l.score?.bucket === "warm").length,
+    closedWon: leads.filter((l) => l.status === "closed_won").length,
+  };
+
+  // Transform API response to expected component structure
+  const transformLeads = (apiLeads) => {
+    return apiLeads.map((lead) => ({
+      id: lead.lead_id,
+      customer: {
+        name: lead.customer_name,
+        age: lead.age,
+        job: lead.job,
+        balance: lead.balance, // API doesn't provide balance, use 0 as placeholder
+      },
+      score: {
+        score: parseFloat(lead.score),
+        bucket: lead.bucket,
+        explanation: lead.explanation, // API doesn't provide explanation
+      },
+      status: lead.status,
+    }));
+  };
+
+  const dummyLeads = [
     // Dummy data for leads (will be replaced with real API data)
     {
       id: 1,
@@ -120,28 +148,45 @@ const DashboardPage = () => {
   const fetchDashboardData = async () => {
     try {
       // Fetch current user from API
-      const response = await authFetch("/api/me", {
+      const userResponse = await authFetch("/api/me", {
         method: "GET",
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!userResponse.ok) {
+        if (userResponse.status === 401) {
           handleLogout();
         }
         throw new Error("Gagal memuat data user");
       }
 
-      const data = await response.json();
-      if (data?.user) {
-        setUser(data.user);
+      const userData = await userResponse.json();
+      if (userData?.user) {
+        setUser(userData.user);
       }
 
-      // TODO: Fetch leads data from API
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Fetch leads data from API
+      const leadsResponse = await authFetch("/api/sales/leads", {
+        method: "GET",
+      });
+
+      if (leadsResponse.ok) {
+        const leadsData = await leadsResponse.json();
+        if (Array.isArray(leadsData)) {
+          setLeads(transformLeads(leadsData));
+        } else if (Array.isArray(leadsData.data)) {
+          setLeads(transformLeads(leadsData.data));
+        }
+      } else {
+        // Fallback to dummy data if API unavailable
+        setLeads(dummyLeads);
+      }
     } catch (error) {
       toast.error(error.message || "Gagal memuat data dashboard");
       if (error.message === "Gagal memuat data user") {
         handleLogout();
+      } else {
+        // Fallback to dummy leads on error
+        setLeads(dummyLeads);
       }
     } finally {
       setLoading(false);
@@ -258,7 +303,7 @@ const DashboardPage = () => {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold heading-font text-gray-900">
-                {0}
+                {stats.total}
               </p>
             </CardContent>
           </Card>
@@ -275,7 +320,7 @@ const DashboardPage = () => {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold heading-font text-red-600">
-                {0}
+                {stats.hot}
               </p>
             </CardContent>
           </Card>
@@ -292,7 +337,7 @@ const DashboardPage = () => {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold heading-font text-amber-600">
-                {0}
+                {stats.warm}
               </p>
             </CardContent>
           </Card>
@@ -309,7 +354,7 @@ const DashboardPage = () => {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold heading-font text-emerald-600">
-                {0}
+                {stats.closedWon}
               </p>
             </CardContent>
           </Card>
