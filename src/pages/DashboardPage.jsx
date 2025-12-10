@@ -34,14 +34,12 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
-import { clearSession } from "../lib/auth";
-
-const BACKEND_URL = "process.env.REACT_APP_BACKEND_URL";
-const API = `${BACKEND_URL}/api`;
+import { clearSession, authFetch, getStoredUser } from "../lib/auth";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     bucket: "",
@@ -50,14 +48,8 @@ const DashboardPage = () => {
     has_loan: "",
   });
 
-  // Dummy data for user
-  const user = {
-    name: "Prasetyo",
-    role: "sales",
-  };
-
   const leads = [
-    // Dummy data for leads
+    // Dummy data for leads (will be replaced with real API data)
     {
       id: 1,
       customer: {
@@ -123,15 +115,32 @@ const DashboardPage = () => {
 
   useEffect(() => {
     fetchDashboardData();
-  });
+  }, []);
 
   const fetchDashboardData = async () => {
     try {
-      // set timer 3 seconds to simulate loading
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Fetch current user from API
+      const response = await authFetch("/api/me", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          handleLogout();
+        }
+        throw new Error("Gagal memuat data user");
+      }
+
+      const data = await response.json();
+      if (data?.user) {
+        setUser(data.user);
+      }
+
+      // TODO: Fetch leads data from API
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      toast.error("Gagal memuat data dashboard");
-      if (error.response?.status === 401) {
+      toast.error(error.message || "Gagal memuat data dashboard");
+      if (error.message === "Gagal memuat data user") {
         handleLogout();
       }
     } finally {
