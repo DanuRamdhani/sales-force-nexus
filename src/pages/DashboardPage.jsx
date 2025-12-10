@@ -65,12 +65,13 @@ const DashboardPage = () => {
         name: lead.customer_name,
         age: lead.age,
         job: lead.job,
-        balance: lead.balance, // API doesn't provide balance, use 0 as placeholder
+        balance: lead.balance,
+        has_loan: lead.loan,
       },
       score: {
         score: parseFloat(lead.score),
         bucket: lead.bucket,
-        explanation: lead.explanation, // API doesn't provide explanation
+        explanation: lead.explanation,
       },
       status: lead.status,
     }));
@@ -233,6 +234,55 @@ const DashboardPage = () => {
       minimumFractionDigits: 0,
     }).format(amount);
   };
+
+  // Filter and search leads
+  const filteredLeads = leads.filter((lead) => {
+    // Search by customer name
+    if (
+      searchQuery &&
+      !lead.customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Filter by bucket
+    if (
+      filters.bucket &&
+      filters.bucket !== " " &&
+      lead.score.bucket !== filters.bucket
+    ) {
+      return false;
+    }
+
+    // Filter by status
+    if (
+      filters.status &&
+      filters.status !== " " &&
+      lead.status !== filters.status
+    ) {
+      return false;
+    }
+
+    // Filter by job
+    if (
+      filters.job &&
+      filters.job !== " " &&
+      lead.customer.job.toLowerCase() !== filters.job.toLowerCase()
+    ) {
+      return false;
+    }
+
+    // Filter by loan status
+    if (
+      filters.has_loan &&
+      filters.has_loan !== " " &&
+      lead.customer.has_loan !== filters.has_loan
+    ) {
+      return false;
+    }
+
+    return true;
+  });
 
   if (loading) {
     return (
@@ -466,7 +516,7 @@ const DashboardPage = () => {
 
         {/* Leads List */}
         <div className="space-y-3">
-          {leads.length === 0 ? (
+          {filteredLeads.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -474,7 +524,7 @@ const DashboardPage = () => {
               </CardContent>
             </Card>
           ) : (
-            leads.map((lead, index) => (
+            filteredLeads.map((lead, index) => (
               <Card
                 key={lead.id}
                 className="card-hover cursor-pointer animate-fadeIn"
