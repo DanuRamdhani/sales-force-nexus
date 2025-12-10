@@ -48,6 +48,7 @@ import {
   Flame,
   Wind,
   Snowflake,
+  Edit,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -60,6 +61,7 @@ const LeadDetailPage = () => {
   const [leadData, setLeadData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editingFollowupId, setEditingFollowupId] = useState(null);
   const [followupForm, setFollowupForm] = useState({
     result: "",
     notes: "",
@@ -186,6 +188,11 @@ const LeadDetailPage = () => {
     return labels[result] || result;
   };
 
+  const resetFollowupForm = () => {
+    setFollowupForm({ result: "", notes: "", next_action_at: "" });
+    setEditingFollowupId(null);
+  };
+
   const handleSubmitFollowup = async (e) => {
     e.preventDefault();
 
@@ -209,8 +216,14 @@ const LeadDetailPage = () => {
         payload.next_action_at = followupForm.next_action_at;
       }
 
-      const response = await authFetch(`/api/sales/leads/${leadId}/followups`, {
-        method: "POST",
+      const url = editingFollowupId
+        ? `/api/sales/leads/${leadId}/followups/${editingFollowupId}`
+        : `/api/sales/leads/${leadId}/followups`;
+
+      const method = editingFollowupId ? "PUT" : "POST";
+
+      const response = await authFetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -218,20 +231,38 @@ const LeadDetailPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Gagal menambahkan follow-up");
+        throw new Error(
+          editingFollowupId
+            ? "Gagal mengubah follow-up"
+            : "Gagal menambahkan follow-up"
+        );
       }
 
-      toast.success("Follow-up berhasil ditambahkan");
+      toast.success(
+        editingFollowupId
+          ? "Follow-up berhasil diperbarui"
+          : "Follow-up berhasil ditambahkan"
+      );
       setDialogOpen(false);
-      setFollowupForm({ result: "", notes: "", next_action_at: "" });
+      resetFollowupForm();
 
       // Refresh lead data to get updated followups
       await fetchLeadDetail();
     } catch (error) {
-      toast.error(error.message || "Gagal menambahkan follow-up");
+      toast.error(error.message);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditFollowup = (followup) => {
+    setFollowupForm({
+      result: followup.result,
+      notes: followup.notes || "",
+      next_action_at: followup.next_action_at || "",
+    });
+    setEditingFollowupId(followup.id);
+    setDialogOpen(true);
   };
 
   if (loading) {
@@ -277,11 +308,18 @@ const LeadDetailPage = () => {
               <ArrowLeft className="w-4 h-4" />
               Kembali
             </Button>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog
+              open={dialogOpen}
+              onOpenChange={(open) => {
+                setDialogOpen(open);
+                if (!open) resetFollowupForm();
+              }}
+            >
               <DialogTrigger asChild>
                 <Button
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 gap-2 btn-scale"
                   data-testid="add-followup-button"
+                  onClick={() => resetFollowupForm()}
                 >
                   <Plus className="w-4 h-4" />
                   Tambah Follow-up
@@ -289,9 +327,13 @@ const LeadDetailPage = () => {
               </DialogTrigger>
               <DialogContent data-testid="followup-dialog">
                 <DialogHeader>
-                  <DialogTitle>Tambah Follow-up</DialogTitle>
+                  <DialogTitle>
+                    {editingFollowupId ? "Edit Follow-up" : "Tambah Follow-up"}
+                  </DialogTitle>
                   <DialogDescription>
-                    Catat hasil interaksi dengan nasabah
+                    {editingFollowupId
+                      ? "Ubah hasil interaksi dengan nasabah"
+                      : "Catat hasil interaksi dengan nasabah"}
                   </DialogDescription>
                 </DialogHeader>
                 <form className="space-y-4" onSubmit={handleSubmitFollowup}>
@@ -364,7 +406,13 @@ const LeadDetailPage = () => {
                     className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
                     disabled={submitting}
                   >
-                    {submitting ? "Menyimpan..." : "Simpan Follow-up"}
+                    {submitting
+                      ? editingFollowupId
+                        ? "Memperbarui..."
+                        : "Menyimpan..."
+                      : editingFollowupId
+                      ? "Perbarui Follow-up"
+                      : "Simpan Follow-up"}
                   </Button>
                 </form>
               </DialogContent>
@@ -659,13 +707,24 @@ const LeadDetailPage = () => {
                                 {getResultLabel(followup.result)}
                               </span>
                             </div>
-                            <span className="text-xs text-gray-500">
-                              {format(
-                                new Date(followup.created_at),
-                                "dd MMM yyyy, HH:mm",
-                                { locale: id }
-                              )}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-500">
+                                {format(
+                                  new Date(followup.created_at),
+                                  "dd MMM yyyy, HH:mm",
+                                  { locale: id }
+                                )}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditFollowup(followup)}
+                                className="h-6 w-6 p-0"
+                                data-testid={`edit-followup-btn-${followup.id}`}
+                              >
+                                <Edit className="w-4 h-4 text-blue-600" />
+                              </Button>
+                            </div>
                           </div>
 
                           {followup.notes && (
