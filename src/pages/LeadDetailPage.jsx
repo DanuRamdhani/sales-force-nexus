@@ -186,6 +186,54 @@ const LeadDetailPage = () => {
     return labels[result] || result;
   };
 
+  const handleSubmitFollowup = async (e) => {
+    e.preventDefault();
+
+    if (!followupForm.result) {
+      toast.error("Hasil follow-up harus dipilih");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = {
+        result: followupForm.result,
+        notes: followupForm.notes,
+      };
+
+      // Add next_action_at only if result is followup_lagi and date is provided
+      if (
+        followupForm.result === "followup_lagi" &&
+        followupForm.next_action_at
+      ) {
+        payload.next_action_at = followupForm.next_action_at;
+      }
+
+      const response = await authFetch(`/api/sales/leads/${leadId}/followups`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal menambahkan follow-up");
+      }
+
+      toast.success("Follow-up berhasil ditambahkan");
+      setDialogOpen(false);
+      setFollowupForm({ result: "", notes: "", next_action_at: "" });
+
+      // Refresh lead data to get updated followups
+      await fetchLeadDetail();
+    } catch (error) {
+      toast.error(error.message || "Gagal menambahkan follow-up");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -246,7 +294,7 @@ const LeadDetailPage = () => {
                     Catat hasil interaksi dengan nasabah
                   </DialogDescription>
                 </DialogHeader>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmitFollowup}>
                   <div className="space-y-2">
                     <Label htmlFor="result">Hasil Follow-up *</Label>
                     <Select
