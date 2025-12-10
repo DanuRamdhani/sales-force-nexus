@@ -155,7 +155,9 @@ const DashboardPage = () => {
 
       if (!userResponse.ok) {
         if (userResponse.status === 401) {
-          handleLogout();
+          throw new Error(
+            "Silakan login terlebih dahulu untuk mengakses dashboard"
+          );
         }
         throw new Error("Gagal memuat data user");
       }
@@ -182,8 +184,12 @@ const DashboardPage = () => {
         setLeads(dummyLeads);
       }
     } catch (error) {
+      const isLoginError = error.message.includes(
+        "Silakan login terlebih dahulu"
+      );
       toast.error(error.message || "Gagal memuat data dashboard");
-      if (error.message === "Gagal memuat data user") {
+
+      if (error.message === "Gagal memuat data user" || isLoginError) {
         handleLogout();
       } else {
         // Fallback to dummy leads on error
