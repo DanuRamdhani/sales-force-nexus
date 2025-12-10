@@ -1,127 +1,178 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { toast } from "sonner";
 import {
-  ArrowLeft, User, Briefcase, GraduationCap, Heart,
-  Wallet, Home, CreditCard, Phone, Calendar, Target,
-  TrendingUp, MessageSquare, CheckCircle, XCircle,
-  Clock, Plus, Flame, Wind, Snowflake
+  ArrowLeft,
+  User,
+  Briefcase,
+  GraduationCap,
+  Heart,
+  Wallet,
+  Home,
+  CreditCard,
+  Phone,
+  Calendar,
+  Target,
+  TrendingUp,
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Plus,
+  Flame,
+  Wind,
+  Snowflake,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { authFetch, clearSession } from "../lib/auth";
 
 const LeadDetailPage = () => {
   const navigate = useNavigate();
+  const { leadId } = useParams();
   const [loading, setLoading] = useState(true);
+  const [leadData, setLeadData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [submitting, ] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [followupForm, setFollowupForm] = useState({
     result: "",
     notes: "",
-    next_action_at: ""
+    next_action_at: "",
   });
 
   useEffect(() => {
-    fetchLeadDetail();
-  });
+    if (leadId) {
+      fetchLeadDetail();
+    }
+  }, [leadId]);
 
   const fetchLeadDetail = async () => {
     try {
-      // Simulate loading delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    } catch (error) {
-      toast.error("Gagal memuat detail lead");
-      if (error.response?.status === 401) {
-        navigate("/login");
+      const response = await authFetch(`/api/sales/leads/${leadId}`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          clearSession();
+          navigate("/login", { replace: true });
+        } else if (response.status === 404) {
+          toast.error("Lead tidak ditemukan");
+          navigate("/", { replace: true });
+        }
+        throw new Error("Gagal memuat detail lead");
       }
+
+      const data = await response.json();
+
+      // Transform API response to component structure
+      const transformed = {
+        lead: {
+          contact_type: data.lead.contact_type,
+          last_contact_date: data.lead.last_contact_date,
+          campaign: data.lead.campaign,
+          previous_contacts: data.lead.previous_contacts,
+          status: data.lead.status,
+        },
+        customer: {
+          name: data.lead.customer_name,
+          age: data.lead.age,
+          job: data.lead.job,
+          education: data.lead.education,
+          marital: data.lead.marital,
+          balance: parseFloat(data.lead.balance),
+          housing: data.lead.housing,
+          loan: data.lead.loan,
+          has_default: data.lead.has_default,
+        },
+        score: {
+          score: parseFloat(data.latestScore.score),
+          bucket: data.latestScore.bucket,
+          explanation: data.latestScore.explanation,
+        },
+        followups: data.followups || [],
+      };
+
+      setLeadData(transformed);
+    } catch (error) {
+      toast.error(error.message || "Gagal memuat detail lead");
     } finally {
       setLoading(false);
     }
   };
 
-  const score = {
-    score: 0.85,
-    bucket: "warm",
-    explanation: "Lead ini menunjukkan minat yang baik tetapi membutuhkan lebih banyak interaksi."
-  };
-  
-  const customer = {
-    name: "Andi Wijaya",
-    age:  32,
-    job: "teknisi",
-    education: "sarjana",
-    marital: "menikah",
-    balance: 1500000,
-    housing: "yes",
-    loan: "no",
-    has_default: "no"
-  };
-
-  const lead = {
-    contact_type: "telepon",
-    last_contact_date: "2024-06-15",
-    campaign: 3,
-    previous_contacts: 2,
-    status: "in_progress"
-  };
-
-  const followups = [
-    {
-      id: 1,
-      result: "sibuk",
-      notes: "Nasabah sibuk saat dihubungi, akan dihubungi kembali minggu depan.",
-      created_at: "2024-06-10T10:30:00Z",
-      next_action_at: "2024-06-17T14:00:00Z"
-    },
-    {
-      id: 2,
-      result: "berhasil",
-      notes: "Nasabah setuju untuk melanjutkan proses pengajuan pinjaman.",
-      created_at: "2024-06-12T15:45:00Z",
-      next_action_at: "2024-06-19T10:00:00Z"
-    }
-  ];
-
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
   const getBucketColor = (bucket) => {
     switch (bucket) {
-      case "hot": return "from-red-500 to-red-600";
-      case "warm": return "from-amber-500 to-amber-600";
-      case "cold": return "from-blue-500 to-blue-600";
-      default: return "from-gray-500 to-gray-600";
+      case "hot":
+        return "from-red-500 to-red-600";
+      case "warm":
+        return "from-amber-500 to-amber-600";
+      case "cold":
+        return "from-blue-500 to-blue-600";
+      default:
+        return "from-gray-500 to-gray-600";
     }
   };
 
   const getBucketIcon = (bucket) => {
     switch (bucket) {
-      case "hot": return <Flame className="w-6 h-6" />;
-      case "warm": return <Wind className="w-6 h-6" />;
-      case "cold": return <Snowflake className="w-6 h-6" />;
-      default: return null;
+      case "hot":
+        return <Flame className="w-6 h-6" />;
+      case "warm":
+        return <Wind className="w-6 h-6" />;
+      case "cold":
+        return <Snowflake className="w-6 h-6" />;
+      default:
+        return null;
     }
   };
 
   const getResultIcon = (result) => {
     switch (result) {
-      case "berhasil": return <CheckCircle className="w-5 h-5 text-emerald-600" />;
-      case "menolak": return <XCircle className="w-5 h-5 text-red-600" />;
-      case "sibuk": return <Clock className="w-5 h-5 text-amber-600" />;
-      case "followup_lagi": return <MessageSquare className="w-5 h-5 text-blue-600" />;
-      default: return null;
+      case "berhasil":
+        return <CheckCircle className="w-5 h-5 text-emerald-600" />;
+      case "menolak":
+        return <XCircle className="w-5 h-5 text-red-600" />;
+      case "sibuk":
+        return <Clock className="w-5 h-5 text-amber-600" />;
+      case "followup_lagi":
+        return <MessageSquare className="w-5 h-5 text-blue-600" />;
+      default:
+        return null;
     }
   };
 
@@ -130,7 +181,7 @@ const LeadDetailPage = () => {
       berhasil: "Berhasil",
       menolak: "Menolak",
       sibuk: "Sibuk",
-      followup_lagi: "Follow Up Lagi"
+      followup_lagi: "Follow Up Lagi",
     };
     return labels[result] || result;
   };
@@ -146,20 +197,22 @@ const LeadDetailPage = () => {
     );
   }
 
-  if (!lead || !customer || !score || !followups.length) {
+  if (!leadData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card>
           <CardContent className="p-8 text-center">
             <p className="text-gray-600">Lead tidak ditemukan</p>
-            <Button onClick={() => navigate("/")} className="mt-4">Kembali ke Dashboard</Button>
+            <Button onClick={() => navigate("/")} className="mt-4">
+              Kembali ke Dashboard
+            </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // const { lead, customer, score, followups } = leadData;
+  const { lead, customer, score, followups } = leadData;
 
   return (
     <div className="min-h-screen pb-12" data-testid="lead-detail-page">
@@ -198,17 +251,24 @@ const LeadDetailPage = () => {
                     <Label htmlFor="result">Hasil Follow-up *</Label>
                     <Select
                       value={followupForm.result}
-                      onValueChange={(value) => setFollowupForm({ ...followupForm, result: value })}
+                      onValueChange={(value) =>
+                        setFollowupForm({ ...followupForm, result: value })
+                      }
                       required
                     >
-                      <SelectTrigger id="result" data-testid="followup-result-select">
+                      <SelectTrigger
+                        id="result"
+                        data-testid="followup-result-select"
+                      >
                         <SelectValue placeholder="Pilih hasil" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="berhasil">Berhasil</SelectItem>
                         <SelectItem value="menolak">Menolak</SelectItem>
                         <SelectItem value="sibuk">Sibuk</SelectItem>
-                        <SelectItem value="followup_lagi">Follow Up Lagi</SelectItem>
+                        <SelectItem value="followup_lagi">
+                          Follow Up Lagi
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -220,20 +280,32 @@ const LeadDetailPage = () => {
                       data-testid="followup-notes-input"
                       placeholder="Tulis catatan hasil percakapan..."
                       value={followupForm.notes}
-                      onChange={(e) => setFollowupForm({ ...followupForm, notes: e.target.value })}
+                      onChange={(e) =>
+                        setFollowupForm({
+                          ...followupForm,
+                          notes: e.target.value,
+                        })
+                      }
                       rows={4}
                     />
                   </div>
 
                   {followupForm.result === "followup_lagi" && (
                     <div className="space-y-2">
-                      <Label htmlFor="next_action">Jadwal Follow-up Berikutnya</Label>
+                      <Label htmlFor="next_action">
+                        Jadwal Follow-up Berikutnya
+                      </Label>
                       <Input
                         id="next_action"
                         data-testid="followup-next-action-input"
                         type="datetime-local"
                         value={followupForm.next_action_at}
-                        onChange={(e) => setFollowupForm({ ...followupForm, next_action_at: e.target.value })}
+                        onChange={(e) =>
+                          setFollowupForm({
+                            ...followupForm,
+                            next_action_at: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   )}
@@ -258,13 +330,22 @@ const LeadDetailPage = () => {
           {/* Left Column - Customer Info & Score */}
           <div className="lg:col-span-1 space-y-6">
             {/* Score Card */}
-            <Card className={`border-0 bg-gradient-to-br ${getBucketColor(score.bucket)} text-white shadow-xl`} data-testid="score-card">
+            <Card
+              className={`border-0 bg-gradient-to-br ${getBucketColor(
+                score.bucket
+              )} text-white shadow-xl`}
+              data-testid="score-card"
+            >
               <CardContent className="p-6 text-center">
                 <div className="flex justify-center mb-4">
                   {getBucketIcon(score.bucket)}
                 </div>
-                <h3 className="text-6xl font-bold heading-font mb-2">{(score.score * 100).toFixed(0)}%</h3>
-                <p className="text-lg font-semibold uppercase tracking-wider mb-3">{score.bucket} Lead</p>
+                <h3 className="text-6xl font-bold heading-font mb-2">
+                  {(score.score * 100).toFixed(0)}%
+                </h3>
+                <p className="text-lg font-semibold uppercase tracking-wider mb-3">
+                  {score.bucket} Lead
+                </p>
                 <p className="text-sm opacity-90">{score.explanation}</p>
               </CardContent>
             </Card>
@@ -279,7 +360,9 @@ const LeadDetailPage = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{customer.name}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    {customer.name}
+                  </h3>
                 </div>
 
                 <div className="space-y-3">
@@ -299,7 +382,9 @@ const LeadDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Pekerjaan</p>
-                      <p className="font-medium capitalize">{customer.job.replace('.', '')}</p>
+                      <p className="font-medium capitalize">
+                        {customer.job.replace(".", "")}
+                      </p>
                     </div>
                   </div>
 
@@ -309,7 +394,9 @@ const LeadDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Pendidikan</p>
-                      <p className="font-medium capitalize">{customer.education}</p>
+                      <p className="font-medium capitalize">
+                        {customer.education}
+                      </p>
                     </div>
                   </div>
 
@@ -319,7 +406,9 @@ const LeadDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Status Pernikahan</p>
-                      <p className="font-medium capitalize">{customer.marital}</p>
+                      <p className="font-medium capitalize">
+                        {customer.marital}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -337,30 +426,54 @@ const LeadDetailPage = () => {
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">Saldo</span>
-                  <span className="font-semibold text-gray-900">{formatCurrency(customer.balance)}</span>
+                  <span className="font-semibold text-gray-900">
+                    {formatCurrency(customer.balance)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Home className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm text-gray-600">Pinjaman Rumah</span>
+                    <span className="text-sm text-gray-600">
+                      Pinjaman Rumah
+                    </span>
                   </div>
-                  <span className={`font-semibold ${customer.housing === 'yes' ? 'text-amber-600' : 'text-emerald-600'}`}>
-                    {customer.housing === 'yes' ? 'Ya' : 'Tidak'}
+                  <span
+                    className={`font-semibold ${
+                      customer.housing === "yes"
+                        ? "text-amber-600"
+                        : "text-emerald-600"
+                    }`}
+                  >
+                    {customer.housing === "yes" ? "Ya" : "Tidak"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm text-gray-600">Pinjaman Personal</span>
+                    <span className="text-sm text-gray-600">
+                      Pinjaman Personal
+                    </span>
                   </div>
-                  <span className={`font-semibold ${customer.loan === 'yes' ? 'text-amber-600' : 'text-emerald-600'}`}>
-                    {customer.loan === 'yes' ? 'Ya' : 'Tidak'}
+                  <span
+                    className={`font-semibold ${
+                      customer.loan === "yes"
+                        ? "text-amber-600"
+                        : "text-emerald-600"
+                    }`}
+                  >
+                    {customer.loan === "yes" ? "Ya" : "Tidak"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">Default</span>
-                  <span className={`font-semibold ${customer.has_default === 'yes' ? 'text-red-600' : 'text-emerald-600'}`}>
-                    {customer.has_default === 'yes' ? 'Ya' : 'Tidak'}
+                  <span
+                    className={`font-semibold ${
+                      customer.has_default === "yes"
+                        ? "text-red-600"
+                        : "text-emerald-600"
+                    }`}
+                  >
+                    {customer.has_default === "yes" ? "Ya" : "Tidak"}
                   </span>
                 </div>
               </CardContent>
@@ -385,7 +498,9 @@ const LeadDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Tipe Kontak</p>
-                      <p className="font-medium capitalize">{lead.contact_type}</p>
+                      <p className="font-medium capitalize">
+                        {lead.contact_type}
+                      </p>
                     </div>
                   </div>
 
@@ -395,7 +510,13 @@ const LeadDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Kontak Terakhir</p>
-                      <p className="font-medium">{lead.last_contact_date}</p>
+                      <p className="font-medium">
+                        {format(
+                          new Date(lead.last_contact_date),
+                          "dd MMM yyyy",
+                          { locale: id }
+                        )}
+                      </p>
                     </div>
                   </div>
 
@@ -422,11 +543,22 @@ const LeadDetailPage = () => {
 
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                   <p className="text-sm text-gray-600 mb-1">Status Lead</p>
-                  <span className={`status-${lead.status.replace('_', '-')} inline-flex items-center gap-2`}>
-                    {lead.status === 'closed_won' && <CheckCircle className="w-4 h-4" />}
-                    {lead.status === 'closed_lost' && <XCircle className="w-4 h-4" />}
-                    {lead.status === 'in_progress' && <Clock className="w-4 h-4" />}
-                    {lead.status.replace('_', ' ').toUpperCase()}
+                  <span
+                    className={`status-${lead.status.replace(
+                      "_",
+                      "-"
+                    )} inline-flex items-center gap-2`}
+                  >
+                    {lead.status === "closed_won" && (
+                      <CheckCircle className="w-4 h-4" />
+                    )}
+                    {lead.status === "closed_lost" && (
+                      <XCircle className="w-4 h-4" />
+                    )}
+                    {lead.status === "in_progress" && (
+                      <Clock className="w-4 h-4" />
+                    )}
+                    {lead.status.replace("_", " ").toUpperCase()}
                   </span>
                 </div>
               </CardContent>
@@ -442,7 +574,9 @@ const LeadDetailPage = () => {
                     {followups.length}
                   </span>
                 </CardTitle>
-                <CardDescription>Catatan interaksi dengan nasabah</CardDescription>
+                <CardDescription>
+                  Catatan interaksi dengan nasabah
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {followups.length === 0 ? (
@@ -473,21 +607,36 @@ const LeadDetailPage = () => {
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2">
                               {getResultIcon(followup.result)}
-                              <span className="font-semibold text-gray-900">{getResultLabel(followup.result)}</span>
+                              <span className="font-semibold text-gray-900">
+                                {getResultLabel(followup.result)}
+                              </span>
                             </div>
                             <span className="text-xs text-gray-500">
-                              {format(new Date(followup.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}
+                              {format(
+                                new Date(followup.created_at),
+                                "dd MMM yyyy, HH:mm",
+                                { locale: id }
+                              )}
                             </span>
                           </div>
 
                           {followup.notes && (
-                            <p className="text-sm text-gray-700 mb-3">{followup.notes}</p>
+                            <p className="text-sm text-gray-700 mb-3">
+                              {followup.notes}
+                            </p>
                           )}
 
                           {followup.next_action_at && (
                             <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 px-3 py-2 rounded-md">
                               <Clock className="w-3 h-3" />
-                              <span>Next: {format(new Date(followup.next_action_at), 'dd MMM yyyy, HH:mm', { locale: id })}</span>
+                              <span>
+                                Next:{" "}
+                                {format(
+                                  new Date(followup.next_action_at),
+                                  "dd MMM yyyy, HH:mm",
+                                  { locale: id }
+                                )}
+                              </span>
                             </div>
                           )}
                         </div>
