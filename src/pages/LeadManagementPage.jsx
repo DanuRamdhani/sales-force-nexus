@@ -240,7 +240,15 @@ const LeadManagementPage = () => {
             <div className="flex items-center gap-2">
               <Dialog open={scoreDialogOpen} onOpenChange={setScoreDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="gap-1 sm:gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700">
+                  <Button
+                    className="gap-1 sm:gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                    disabled={!!latestScore}
+                    title={
+                      latestScore
+                        ? "Score sudah ada. Tidak dapat menambah lagi."
+                        : undefined
+                    }
+                  >
                     <BarChart3 className="w-4 h-4" />
                     <span className="hidden sm:inline">
                       Tambah Score (Manual)
