@@ -187,7 +187,12 @@ const AdminDashboardPage = () => {
               <CardDescription>Kelola akun sales</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full" disabled>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate("/admin/sales")}
+                data-testid="manage-sales-button"
+              >
                 Kelola
               </Button>
             </CardContent>
