@@ -41,6 +41,7 @@ import {
   Users,
   Plus,
   Edit,
+  Eye,
   Trash2,
   Search,
   Filter,
@@ -616,9 +617,8 @@ const CustomerManagementPage = () => {
             filteredCustomers.map((customer, index) => (
               <Card
                 key={customer.id}
-                className="card-hover animate-fadeIn cursor-pointer"
+                className="card-hover animate-fadeIn"
                 style={{ animationDelay: `${index * 0.05}s` }}
-                onClick={() => navigate(`/admin/customers/${customer.id}`)}
                 data-testid={`customer-card-${customer.id}`}
               >
                 <CardContent className="p-4">
@@ -670,6 +670,19 @@ const CustomerManagementPage = () => {
 
                     {/* Action Buttons */}
                     <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/admin/customers/${customer.id}`);
+                        }}
+                        className="gap-1 text-xs sm:text-sm bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200"
+                        data-testid={`detail-customer-btn-${customer.id}`}
+                      >
+                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Detail</span>
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
