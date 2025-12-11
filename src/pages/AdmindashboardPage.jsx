@@ -182,9 +182,9 @@ const AdminDashboardPage = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 heading-font">
                 <Users className="w-5 h-5" />
-                Manajemen Sales
+                Sales Management
               </CardTitle>
-              <CardDescription>Kelola akun sales</CardDescription>
+              <CardDescription>Kelola semua akun sales</CardDescription>
             </CardHeader>
             <CardContent>
               <Button
@@ -198,7 +198,7 @@ const AdminDashboardPage = () => {
             </CardContent>
           </Card>
 
-          <Card className="card-hover">
+          {/* <Card className="card-hover">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 heading-font">
                 <Settings className="w-5 h-5" />
@@ -230,16 +230,16 @@ const AdminDashboardPage = () => {
                 Buka Analytics
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card className="card-hover">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 heading-font">
                 <Target className="w-5 h-5" />
-                Lead Management
+                Leads & Customer Management
               </CardTitle>
               <CardDescription>
-                Kelola semua customer dan leads di sistem
+                Kelola semua leads & customer di sistem
               </CardDescription>
             </CardHeader>
             <CardContent>
