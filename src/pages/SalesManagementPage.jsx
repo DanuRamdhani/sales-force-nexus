@@ -66,6 +66,7 @@ const SalesManagementPage = () => {
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
+    is_active: true,
   });
 
   const [passwordForm, setPasswordForm] = useState({
@@ -106,7 +107,7 @@ const SalesManagementPage = () => {
   };
 
   const resetEditForm = () => {
-    setEditForm({ name: "", email: "" });
+    setEditForm({ name: "", email: "", is_active: true });
     setSelectedSales(null);
   };
 
@@ -189,6 +190,7 @@ const SalesManagementPage = () => {
           body: JSON.stringify({
             name: editForm.name,
             email: editForm.email,
+            is_active: editForm.is_active,
           }),
         }
       );
@@ -289,8 +291,43 @@ const SalesManagementPage = () => {
     setEditForm({
       name: sales.name,
       email: sales.email,
+      is_active: sales.is_active === 1 || sales.is_active === true,
     });
     setEditDialogOpen(true);
+  };
+
+  const handleToggleStatus = async (sales) => {
+    const newStatus = !sales.is_active;
+    setSubmitting(true);
+    try {
+      const response = await authFetch(`/api/admin/users/sales/${sales.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: sales.name,
+          email: sales.email,
+          is_active: newStatus,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengubah status sales");
+      }
+
+      toast.success(
+        data.message ||
+          `Sales ${newStatus ? "diaktifkan" : "dinonaktifkan"} berhasil`
+      );
+      await fetchSalesUsers();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const openPasswordDialog = (sales) => {
@@ -319,16 +356,16 @@ const SalesManagementPage = () => {
     <div className="min-h-screen pb-12" data-testid="sales-management-page">
       {/* Header */}
       <header className="glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
             <Button
               variant="ghost"
               onClick={() => navigate("/admin")}
-              className="gap-2"
+              className="gap-1 sm:gap-2 text-sm sm:text-base"
               data-testid="back-button"
             >
               <ArrowLeft className="w-4 h-4" />
-              Kembali
+              <span className="hidden sm:inline">Kembali</span>
             </Button>
 
             <Dialog
@@ -340,11 +377,12 @@ const SalesManagementPage = () => {
             >
               <DialogTrigger asChild>
                 <Button
-                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 gap-2 btn-scale"
+                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 gap-1 sm:gap-2 btn-scale text-sm sm:text-base"
                   data-testid="add-sales-button"
                 >
                   <Plus className="w-4 h-4" />
-                  Tambah Sales
+                  <span className="hidden sm:inline">Tambah Sales</span>
+                  <span className="sm:hidden">Tambah</span>
                 </Button>
               </DialogTrigger>
               <DialogContent data-testid="create-sales-dialog">
@@ -413,27 +451,27 @@ const SalesManagementPage = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold heading-font gradient-text mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold heading-font gradient-text mb-2">
             Manajemen Sales
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Kelola akun sales user dan hak akses mereka
           </p>
         </div>
 
         {/* Stats Card */}
-        <Card className="mb-6 border-l-4 border-l-emerald-500">
-          <CardHeader className="pb-3">
-            <CardDescription className="flex items-center gap-2">
+        <Card className="mb-4 sm:mb-6 border-l-4 border-l-emerald-500">
+          <CardHeader className="pb-2 sm:pb-3">
+            <CardDescription className="flex items-center gap-2 text-xs sm:text-sm">
               <Users className="w-4 h-4" />
               Total Sales User
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold heading-font text-gray-900">
+            <p className="text-2xl sm:text-3xl font-bold heading-font text-gray-900">
               {salesUsers.length}
             </p>
           </CardContent>
@@ -465,19 +503,19 @@ const SalesManagementPage = () => {
                 data-testid={`sales-card-${sales.id}`}
               >
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                       {/* Avatar */}
                       <div className="flex-shrink-0">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                          <User className="w-6 h-6 text-white" />
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                          <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                       </div>
 
                       {/* User Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-semibold text-gray-900 truncate">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                             {sales.name}
                           </h3>
                           {sales.is_active ? (
@@ -486,7 +524,7 @@ const SalesManagementPage = () => {
                             <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
                           )}
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-600">
                           <Mail className="w-3 h-3" />
                           <span className="truncate">{sales.email}</span>
                         </div>
@@ -503,36 +541,64 @@ const SalesManagementPage = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleToggleStatus(sales)}
+                        className={`gap-1 text-xs sm:text-sm ${
+                          sales.is_active
+                            ? "text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                            : "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                        }`}
+                        data-testid={`toggle-status-btn-${sales.id}`}
+                        disabled={submitting}
+                      >
+                        {sales.is_active ? (
+                          <>
+                            <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">
+                              Nonaktifkan
+                            </span>
+                            <span className="sm:hidden">Off</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Aktifkan</span>
+                            <span className="sm:hidden">On</span>
+                          </>
+                        )}
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => openEditDialog(sales)}
-                        className="gap-2"
+                        className="gap-1 text-xs sm:text-sm"
                         data-testid={`edit-sales-btn-${sales.id}`}
                       >
-                        <Edit className="w-4 h-4" />
-                        Edit
+                        <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Edit</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => openPasswordDialog(sales)}
-                        className="gap-2"
+                        className="gap-1 text-xs sm:text-sm"
                         data-testid={`reset-password-btn-${sales.id}`}
                       >
-                        <Key className="w-4 h-4" />
-                        Reset
+                        <Key className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Reset</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => openDeleteDialog(sales)}
-                        className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="gap-1 text-xs sm:text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
                         data-testid={`delete-sales-btn-${sales.id}`}
                       >
-                        <Trash2 className="w-4 h-4" />
-                        Hapus
+                        <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Hapus</span>
                       </Button>
                     </div>
                   </div>
@@ -578,6 +644,37 @@ const SalesManagementPage = () => {
                 }
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-status">Status</Label>
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEditForm({ ...editForm, is_active: !editForm.is_active })
+                  }
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    editForm.is_active ? "bg-emerald-600" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      editForm.is_active ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+                <div className="flex items-center gap-2">
+                  {editForm.is_active ? (
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-600" />
+                  )}
+                  <span className="text-sm font-medium text-gray-700">
+                    {editForm.is_active ? "Aktif" : "Nonaktif"}
+                  </span>
+                </div>
+              </div>
             </div>
 
             <Button
