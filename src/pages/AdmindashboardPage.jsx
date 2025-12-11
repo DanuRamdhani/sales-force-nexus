@@ -238,15 +238,17 @@ const AdminDashboardPage = () => {
                 <Target className="w-5 h-5" />
                 Lead Management
               </CardTitle>
-              <CardDescription>Kelola semua lead di sistem</CardDescription>
+              <CardDescription>
+                Kelola semua customer dan leads di sistem
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/admin/customers")}
               >
-                Lihat Dashboard Sales
+                Kelola
               </Button>
             </CardContent>
           </Card>

@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import LeadDetailPage from "./pages/LeadDetailPage.jsx";
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
 import SalesManagementPage from "./pages/SalesManagementPage.jsx";
+import CustomerManagementPage from "./pages/CustomerManagementPage.jsx";
 import RequireAdmin from "./components/RequireAdmin.jsx";
 import RequireSales from "./components/RequireSales.jsx";
 import { Toaster } from "./components/ui/sonner";
@@ -47,6 +48,14 @@ function App() {
           element={
             <RequireAdmin>
               <SalesManagementPage />
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/customers"
+          element={
+            <RequireAdmin>
+              <CustomerManagementPage />
             </RequireAdmin>
           }
         />
