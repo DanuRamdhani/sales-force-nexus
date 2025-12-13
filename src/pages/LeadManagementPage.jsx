@@ -52,7 +52,7 @@ const LeadManagementPage = () => {
     last_contact_date: "",
     campaign: "1",
     previous_contacts: "0",
-    prev_outcome: "unknown",
+    prev_outcome: "nonexistent",
     status: "new",
   });
 
@@ -92,7 +92,7 @@ const LeadManagementPage = () => {
         last_contact_date: data.lead?.last_contact_date || "",
         campaign: String(data.lead?.campaign ?? "1"),
         previous_contacts: String(data.lead?.previous_contacts ?? "0"),
-        prev_outcome: data.lead?.prev_outcome || "unknown",
+        prev_outcome: data.lead?.prev_outcome || "nonexistent",
         status: data.lead?.status || "new",
       }));
     } catch (error) {
@@ -425,7 +425,7 @@ const LeadManagementPage = () => {
                             })
                           }
                         >
-                          <option value="unknown">Unknown</option>
+                          <option value="nonexistent">Nonexistent</option>
                           <option value="success">Success</option>
                           <option value="failure">Failure</option>
                         </select>
