@@ -58,9 +58,9 @@ const AdminDashboardPage = () => {
       const statsData = data.stats || {};
 
       // Find hot leads count from leadsByBucket
-      const hotLeadsCount = statsData.leadsByBucket?.find(
-        (item) => item.bucket === "hot"
-      )?.count || 0;
+      const hotLeadsCount =
+        statsData.leadsByBucket?.find((item) => item.bucket === "hot")?.count ||
+        0;
 
       setStats({
         totalLeads: statsData.totalLeads || 0,

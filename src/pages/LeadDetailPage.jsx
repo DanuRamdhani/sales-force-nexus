@@ -265,6 +265,40 @@ const LeadDetailPage = () => {
     setDialogOpen(true);
   };
 
+  const handleUpdateStatus = async (newStatus) => {
+    setSubmitting(true);
+    try {
+      const response = await authFetch(`/api/sales/leads/${leadId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengubah status lead");
+      }
+
+      toast.success("Status lead berhasil diperbarui");
+
+      // Update local state
+      setLeadData((prev) => ({
+        ...prev,
+        lead: {
+          ...prev.lead,
+          status: newStatus,
+        },
+      }));
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -638,24 +672,79 @@ const LeadDetailPage = () => {
                 </div>
 
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Status Lead</p>
-                  <span
-                    className={`status-${lead.status.replace(
-                      "_",
-                      "-"
-                    )} inline-flex items-center gap-2`}
-                  >
-                    {lead.status === "closed_won" && (
-                      <CheckCircle className="w-4 h-4" />
-                    )}
-                    {lead.status === "closed_lost" && (
-                      <XCircle className="w-4 h-4" />
-                    )}
-                    {lead.status === "in_progress" && (
-                      <Clock className="w-4 h-4" />
-                    )}
-                    {lead.status.replace("_", " ").toUpperCase()}
-                  </span>
+                  <p className="text-sm text-gray-600 mb-3">Status Lead</p>
+                  <div className="flex flex-col gap-3">
+                    <span
+                      className={`status-${lead.status.replace(
+                        "_",
+                        "-"
+                      )} inline-flex items-center gap-2 w-fit`}
+                    >
+                      {lead.status === "closed_won" && (
+                        <CheckCircle className="w-4 h-4" />
+                      )}
+                      {lead.status === "closed_lost" && (
+                        <XCircle className="w-4 h-4" />
+                      )}
+                      {lead.status === "in_progress" && (
+                        <Clock className="w-4 h-4" />
+                      )}
+                      {lead.status === "new" && <Target className="w-4 h-4" />}
+                      {lead.status.replace("_", " ").toUpperCase()}
+                    </span>
+
+                    {/* Status Update Buttons */}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {lead.status !== "new" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleUpdateStatus("new")}
+                          disabled={submitting || lead.status === "new"}
+                          className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700"
+                        >
+                          <Target className="w-3 h-3 mr-1" />
+                          Reset to New
+                        </Button>
+                      )}
+                      {lead.status !== "in_progress" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleUpdateStatus("in_progress")}
+                          disabled={submitting || lead.status === "in_progress"}
+                          className="text-xs bg-amber-50 hover:bg-amber-100 text-amber-700"
+                        >
+                          <Clock className="w-3 h-3 mr-1" />
+                          In Progress
+                        </Button>
+                      )}
+                      {lead.status !== "closed_won" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleUpdateStatus("closed_won")}
+                          disabled={submitting || lead.status === "closed_won"}
+                          className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700"
+                        >
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          Closed Won
+                        </Button>
+                      )}
+                      {lead.status !== "closed_lost" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleUpdateStatus("closed_lost")}
+                          disabled={submitting || lead.status === "closed_lost"}
+                          className="text-xs bg-red-50 hover:bg-red-100 text-red-700"
+                        >
+                          <XCircle className="w-3 h-3 mr-1" />
+                          Closed Lost
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
