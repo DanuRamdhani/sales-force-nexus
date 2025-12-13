@@ -649,37 +649,6 @@ const SalesManagementPage = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="edit-status">Status</Label>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setEditForm({ ...editForm, is_active: !editForm.is_active })
-                  }
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    editForm.is_active ? "bg-emerald-600" : "bg-gray-300"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      editForm.is_active ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-                <div className="flex items-center gap-2">
-                  {editForm.is_active ? (
-                    <CheckCircle className="w-4 h-4 text-emerald-600" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-red-600" />
-                  )}
-                  <span className="text-sm font-medium text-gray-700">
-                    {editForm.is_active ? "Aktif" : "Nonaktif"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"

@@ -69,7 +69,7 @@ const CustomerManagementPage = () => {
     age: "",
     job: "management",
     marital: "single",
-    education: "primary",
+    education: "unknown",
     has_default: "no",
     balance: "",
     housing: "no",
@@ -81,7 +81,7 @@ const CustomerManagementPage = () => {
     age: "",
     job: "management",
     marital: "single",
-    education: "primary",
+    education: "unknown",
     has_default: "no",
     balance: "",
     housing: "no",
@@ -122,7 +122,7 @@ const CustomerManagementPage = () => {
       age: "",
       job: "management",
       marital: "single",
-      education: "primary",
+      education: "unknown",
       has_default: "no",
       balance: "",
       housing: "no",
@@ -136,7 +136,7 @@ const CustomerManagementPage = () => {
       age: "",
       job: "management",
       marital: "single",
-      education: "primary",
+      education: "unknown",
       has_default: "no",
       balance: "",
       housing: "no",
@@ -445,9 +445,25 @@ const CustomerManagementPage = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="primary">Primary</SelectItem>
-                          <SelectItem value="secondary">Secondary</SelectItem>
-                          <SelectItem value="tertiary">Tertiary</SelectItem>
+                          <SelectItem value="illiterate">Illiterate</SelectItem>
+                          <SelectItem value="basic.4y">
+                            Basic (4 years)
+                          </SelectItem>
+                          <SelectItem value="basic.6y">
+                            Basic (6 years)
+                          </SelectItem>
+                          <SelectItem value="basic.9y">
+                            Basic (9 years)
+                          </SelectItem>
+                          <SelectItem value="high.school">
+                            High School
+                          </SelectItem>
+                          <SelectItem value="professional.course">
+                            Professional Course
+                          </SelectItem>
+                          <SelectItem value="university.degree">
+                            University Degree
+                          </SelectItem>
                           <SelectItem value="unknown">Unknown</SelectItem>
                         </SelectContent>
                       </Select>
@@ -813,9 +829,17 @@ const CustomerManagementPage = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="primary">Primary</SelectItem>
-                    <SelectItem value="secondary">Secondary</SelectItem>
-                    <SelectItem value="tertiary">Tertiary</SelectItem>
+                    <SelectItem value="illiterate">Illiterate</SelectItem>
+                    <SelectItem value="basic.4y">Basic (4 years)</SelectItem>
+                    <SelectItem value="basic.6y">Basic (6 years)</SelectItem>
+                    <SelectItem value="basic.9y">Basic (9 years)</SelectItem>
+                    <SelectItem value="high.school">High School</SelectItem>
+                    <SelectItem value="professional.course">
+                      Professional Course
+                    </SelectItem>
+                    <SelectItem value="university.degree">
+                      University Degree
+                    </SelectItem>
                     <SelectItem value="unknown">Unknown</SelectItem>
                   </SelectContent>
                 </Select>
