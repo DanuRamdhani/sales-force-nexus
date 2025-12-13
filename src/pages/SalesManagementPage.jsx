@@ -537,6 +537,9 @@ const SalesManagementPage = () => {
                             })}
                           </span>
                         </div>
+                        <div className="text-xs text-gray-500 mt-2">
+                          Status: {sales.is_active ? "Aktif" : "Nonaktif"}
+                        </div>
                       </div>
                     </div>
 

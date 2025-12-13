@@ -401,7 +401,6 @@ const AdminManagementPage = () => {
 
         {/* Admin List */}
         <div className="space-y-3">
-
           {filteredAdmins.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
@@ -438,9 +437,16 @@ const AdminManagementPage = () => {
 
                         {/* Admin Info */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate mb-1">
-                            {admin.name}
-                          </h3>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate mb-1">
+                              {admin.name}
+                            </h3>
+                            {admin.is_active ? (
+                              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                            )}
+                          </div>
                           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-600">
                             <span className="flex items-center gap-1">
                               <Mail className="w-3 h-3" />
@@ -476,7 +482,21 @@ const AdminManagementPage = () => {
                           disabled={submitting}
                           data-testid={`toggle-admin-btn-${admin.id}`}
                         >
-                          {admin.is_active ? "Nonaktifkan" : "Aktifkan"}
+                          {admin.is_active ? (
+                            <>
+                              <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="hidden sm:inline">
+                                Nonaktifkan
+                              </span>
+                              <span className="sm:hidden">Off</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="hidden sm:inline">Aktifkan</span>
+                              <span className="sm:hidden">On</span>
+                            </>
+                          )}
                         </Button>
                         <Dialog
                           open={
