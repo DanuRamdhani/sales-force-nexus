@@ -54,6 +54,14 @@ const LeadManagementPage = () => {
     previous_contacts: "0",
     prev_outcome: "nonexistent",
     status: "new",
+    month: "jan",
+    day_of_week: "mon",
+    pdays: "",
+    emp_var_rate: "",
+    cons_price_idx: "",
+    cons_conf_idx: "",
+    euribor3m: "",
+    nr_employed: "",
   });
 
   const [scoreForm, setScoreForm] = useState({
@@ -83,6 +91,7 @@ const LeadManagementPage = () => {
         throw new Error("Gagal memuat detail lead");
       }
       const data = await response.json();
+      console.log(data);
       setLead(data.lead);
       setLatestScore(data.latestScore || null);
       setFollowups(data.followups || []);
@@ -94,6 +103,14 @@ const LeadManagementPage = () => {
         previous_contacts: String(data.lead?.previous_contacts ?? "0"),
         prev_outcome: data.lead?.prev_outcome || "nonexistent",
         status: data.lead?.status || "new",
+        month: data.lead?.month || "jan",
+        day_of_week: data.lead?.day_of_week || "mon",
+        pdays: data.lead?.pdays?.toString() ?? "",
+        emp_var_rate: data.lead?.emp_var_rate?.toString() ?? "",
+        cons_price_idx: data.lead?.cons_price_idx?.toString() ?? "",
+        cons_conf_idx: data.lead?.cons_conf_idx?.toString() ?? "",
+        euribor3m: data.lead?.euribor3m?.toString() ?? "",
+        nr_employed: data.lead?.nr_employed?.toString() ?? "",
       }));
     } catch (error) {
       toast.error(error.message || "Gagal memuat detail lead");
@@ -115,6 +132,14 @@ const LeadManagementPage = () => {
           previous_contacts: parseInt(editForm.previous_contacts),
           prev_outcome: editForm.prev_outcome,
           status: editForm.status,
+          month: editForm.month,
+          day_of_week: editForm.day_of_week,
+          pdays: parseInt(editForm.pdays),
+          emp_var_rate: parseFloat(editForm.emp_var_rate),
+          cons_price_idx: parseFloat(editForm.cons_price_idx),
+          cons_conf_idx: parseFloat(editForm.cons_conf_idx),
+          euribor3m: parseFloat(editForm.euribor3m),
+          nr_employed: parseFloat(editForm.nr_employed),
         }),
       });
       const data = await response.json();
@@ -447,6 +472,154 @@ const LeadManagementPage = () => {
                           <option value="closed_lost">Closed Lost</option>
                         </select>
                       </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="month">Bulan (short)</Label>
+                        <select
+                          id="month"
+                          className="border rounded px-3 py-2 w-full"
+                          value={editForm.month}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, month: e.target.value })
+                          }
+                        >
+                          <option value="jan">Jan</option>
+                          <option value="feb">Feb</option>
+                          <option value="mar">Mar</option>
+                          <option value="apr">Apr</option>
+                          <option value="may">May</option>
+                          <option value="jun">Jun</option>
+                          <option value="jul">Jul</option>
+                          <option value="aug">Aug</option>
+                          <option value="sep">Sep</option>
+                          <option value="oct">Oct</option>
+                          <option value="nov">Nov</option>
+                          <option value="dec">Dec</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="day-of-week">Hari (short)</Label>
+                        <select
+                          id="day-of-week"
+                          className="border rounded px-3 py-2 w-full"
+                          value={editForm.day_of_week}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              day_of_week: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="mon">Mon</option>
+                          <option value="tue">Tue</option>
+                          <option value="wed">Wed</option>
+                          <option value="thu">Thu</option>
+                          <option value="fri">Fri</option>
+                          <option value="sat">Sat</option>
+                          <option value="sun">Sun</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="pdays">Pdays</Label>
+                        <Input
+                          id="pdays"
+                          type="number"
+                          placeholder="999"
+                          value={editForm.pdays}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, pdays: e.target.value })
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="emp-var-rate">Emp Var Rate</Label>
+                        <Input
+                          id="emp-var-rate"
+                          type="number"
+                          step="0.1"
+                          placeholder="-1.8"
+                          value={editForm.emp_var_rate}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              emp_var_rate: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="cons-price-idx">Cons Price Index</Label>
+                        <Input
+                          id="cons-price-idx"
+                          type="number"
+                          step="0.001"
+                          placeholder="92.893"
+                          value={editForm.cons_price_idx}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              cons_price_idx: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="cons-conf-idx">
+                          Cons Confidence Index
+                        </Label>
+                        <Input
+                          id="cons-conf-idx"
+                          type="number"
+                          step="0.1"
+                          placeholder="-46.2"
+                          value={editForm.cons_conf_idx}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              cons_conf_idx: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="euribor3m">Euribor 3m</Label>
+                        <Input
+                          id="euribor3m"
+                          type="number"
+                          step="0.001"
+                          placeholder="1.299"
+                          value={editForm.euribor3m}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              euribor3m: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="nr-employed">Nr Employed</Label>
+                        <Input
+                          id="nr-employed"
+                          type="number"
+                          step="0.01"
+                          placeholder="5099"
+                          value={editForm.nr_employed}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              nr_employed: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
 
                     <Button
@@ -529,10 +702,10 @@ const LeadManagementPage = () => {
                   <span>
                     {lead.last_contact_date
                       ? format(
-                          new Date(lead.last_contact_date),
-                          "dd MMM yyyy",
-                          { locale: id }
-                        )
+                        new Date(lead.last_contact_date),
+                        "dd MMM yyyy",
+                        { locale: id }
+                      )
                       : "-"}
                   </span>
                 </div>
@@ -560,6 +733,50 @@ const LeadManagementPage = () => {
               <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
                 <p className="text-xs text-gray-500 mb-1">Status</p>
                 <div className="text-gray-900 capitalize">{lead.status}</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Bulan</p>
+                <div className="text-gray-900 uppercase">{lead.month}</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Hari</p>
+                <div className="text-gray-900 uppercase">
+                  {lead.day_of_week}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Pdays</p>
+                <div className="text-gray-900">{lead.pdays ?? "-"}</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Emp Var Rate</p>
+                <div className="text-gray-900">{lead.emp_var_rate ?? "-"}</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Cons Price Idx</p>
+                <div className="text-gray-900">
+                  {lead.cons_price_idx ?? "-"}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Cons Conf Idx</p>
+                <div className="text-gray-900">{lead.cons_conf_idx ?? "-"}</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Euribor 3m</p>
+                <div className="text-gray-900">{lead.euribor3m ?? "-"}</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
+                <p className="text-xs text-gray-500 mb-1">Nr Employed</p>
+                <div className="text-gray-900">{lead.nr_employed ?? "-"}</div>
               </div>
             </div>
           </CardContent>
