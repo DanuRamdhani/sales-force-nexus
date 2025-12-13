@@ -17,13 +17,20 @@ import {
   User,
   Settings,
   BarChart3,
+  Flame,
+  TrendingUp as TrendingUpIcon,
 } from "lucide-react";
-import { clearSession } from "../lib/auth";
+import { clearSession, authFetch } from "../lib/auth";
 
 const AdminDashboardPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [stats, setStats] = useState({
+    totalLeads: 0,
+    conversionRate: 0,
+    hotLeads: 0,
+  });
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -39,9 +46,29 @@ const AdminDashboardPage = () => {
 
   const fetchAdminData = async () => {
     try {
-      // Simulate loading delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await authFetch("/api/admin/dashboard/stats", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal memuat data dashboard");
+      }
+
+      const data = await response.json();
+      const statsData = data.stats || {};
+
+      // Find hot leads count from leadsByBucket
+      const hotLeadsCount = statsData.leadsByBucket?.find(
+        (item) => item.bucket === "hot"
+      )?.count || 0;
+
+      setStats({
+        totalLeads: statsData.totalLeads || 0,
+        conversionRate: statsData.conversionRate || 0,
+        hotLeads: hotLeadsCount,
+      });
     } catch (error) {
+      console.error("Error fetching stats:", error);
       toast.error("Gagal memuat data admin");
     } finally {
       setLoading(false);
@@ -122,24 +149,6 @@ const AdminDashboardPage = () => {
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card
-            className="card-hover border-l-4 border-l-emerald-500"
-            data-testid="admin-total-users"
-          >
-            <CardHeader className="pb-3">
-              <CardDescription className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Total Sales
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold heading-font text-gray-900">
-                124
-              </p>
-              <p className="text-xs text-gray-500 mt-1">+5 minggu ini</p>
-            </CardContent>
-          </Card>
-
-          <Card
             className="card-hover border-l-4 border-l-blue-500"
             data-testid="admin-total-leads"
           >
@@ -151,27 +160,42 @@ const AdminDashboardPage = () => {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold heading-font text-gray-900">
-                1,250
+                {stats.totalLeads}
               </p>
-              <p className="text-xs text-gray-500 mt-1">+89 minggu ini</p>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="card-hover border-l-4 border-l-emerald-500"
+            data-testid="admin-conversion-rate"
+          >
+            <CardHeader className="pb-3">
+              <CardDescription className="flex items-center gap-2">
+                <TrendingUpIcon className="w-4 h-4" />
+                Conversion Rate
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold heading-font text-gray-900">
+                {stats.conversionRate}%
+              </p>
             </CardContent>
           </Card>
 
           <Card
             className="card-hover border-l-4 border-l-amber-500"
-            data-testid="admin-open-tickets"
+            data-testid="admin-hot-leads"
           >
             <CardHeader className="pb-3">
               <CardDescription className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" />
-                Open Tickets
+                <Flame className="w-4 h-4" />
+                Hot Leads
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold heading-font text-gray-900">
-                23
+                {stats.hotLeads}
               </p>
-              <p className="text-xs text-gray-500 mt-1">3 urgent</p>
             </CardContent>
           </Card>
         </div>
