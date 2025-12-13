@@ -178,6 +178,28 @@ const AdminDashboardPage = () => {
 
         {/* Admin Features */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {user?.role === "super_admin" && (
+            <Card className="card-hover">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 heading-font">
+                  <Users className="w-5 h-5" />
+                  Admin Management
+                </CardTitle>
+                <CardDescription>Kelola semua akun admin</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate("/super-admin/users")}
+                  data-testid="manage-admin-button"
+                >
+                  Kelola
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           <Card className="card-hover">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 heading-font">

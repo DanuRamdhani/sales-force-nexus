@@ -9,8 +9,10 @@ import SalesManagementPage from "./pages/SalesManagementPage.jsx";
 import CustomerManagementPage from "./pages/CustomerManagementPage.jsx";
 import CustomerDetailPage from "./pages/CustomerDetailPage.jsx";
 import LeadManagementPage from "./pages/LeadManagementPage.jsx";
+import AdminManagementPage from "./pages/AdminManagementPage.jsx";
 import RequireAdmin from "./components/RequireAdmin.jsx";
 import RequireSales from "./components/RequireSales.jsx";
+import RequireSuperAdmin from "./components/RequireSuperAdmin.jsx";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
@@ -75,6 +77,16 @@ function App() {
             <RequireAdmin>
               <LeadManagementPage />
             </RequireAdmin>
+          }
+        />
+
+        {/* Super Admin Routes */}
+        <Route
+          path="/super-admin/users"
+          element={
+            <RequireSuperAdmin>
+              <AdminManagementPage />
+            </RequireSuperAdmin>
           }
         />
       </Routes>
