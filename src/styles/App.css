@@ -178,6 +178,20 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+/* Dialog and AlertDialog Overlay - Blur instead of black */
+[role="dialog"]::before,
+[role="alertdialog"]::before {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Dialog Overlay from radix-ui - Override black background with blur */
+.fixed.inset-0.z-50 {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
 /* Gradient text */
 .gradient-text {
   background: linear-gradient(135deg, #059669 0%, #10b981 100%);
