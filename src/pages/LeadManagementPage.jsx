@@ -46,6 +46,7 @@ const LeadManagementPage = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [scoreDialogOpen, setScoreDialogOpen] = useState(false);
+  const [mlLoading, setMlLoading] = useState(false);
 
   const [editForm, setEditForm] = useState({
     contact_type: "cellular",
@@ -189,6 +190,27 @@ const LeadManagementPage = () => {
       await fetchLeadDetail();
     } catch (error) {
       toast.error(error.message);
+    }
+  };
+
+  const handleGenerateMLScore = async () => {
+    setMlLoading(true);
+    try {
+      // Create the score with ML prediction
+      const response = await authFetch(`/api/admin/leads/${leadId}/scores/ml`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(response.body);
+      const createData = await response.json();
+      if (!response.ok) throw new Error(createData.message || "Gagal membuat score");
+      toast.success("Score ML berhasil ditambahkan");
+      await fetchLeadDetail();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    } finally {
+      setMlLoading(false);
     }
   };
 
@@ -353,6 +375,25 @@ const LeadManagementPage = () => {
                   </form>
                 </DialogContent>
               </Dialog>
+
+              <Button
+                onClick={handleGenerateMLScore}
+                disabled={!!latestScore || mlLoading}
+                className="gap-1 sm:gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                title={
+                  latestScore
+                    ? "Score sudah ada. Tidak dapat menambah lagi."
+                    : mlLoading
+                    ? "Generating score..."
+                    : undefined
+                }
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span className="hidden sm:inline">
+                  {mlLoading ? "Generating..." : "Generate Score ML"}
+                </span>
+                <span className="sm:hidden">ML Score</span>
+              </Button>
 
               <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
                 <DialogTrigger asChild>
