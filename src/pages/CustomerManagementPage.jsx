@@ -50,6 +50,7 @@ import {
   Home,
   Wallet,
   TrendingUp,
+  Phone,
 } from "lucide-react";
 import { authFetch, clearSession } from "../lib/auth";
 
@@ -74,6 +75,7 @@ const CustomerManagementPage = () => {
     balance: "",
     housing: "no",
     loan: "no",
+    contact: "",
   });
 
   const [editForm, setEditForm] = useState({
@@ -86,6 +88,7 @@ const CustomerManagementPage = () => {
     balance: "",
     housing: "no",
     loan: "no",
+    contact: "",
   });
 
   useEffect(() => {
@@ -127,6 +130,7 @@ const CustomerManagementPage = () => {
       balance: "",
       housing: "no",
       loan: "no",
+      contact: "",
     });
   };
 
@@ -141,6 +145,7 @@ const CustomerManagementPage = () => {
       balance: "",
       housing: "no",
       loan: "no",
+      contact: "",
     });
     setSelectedCustomer(null);
   };
@@ -170,6 +175,7 @@ const CustomerManagementPage = () => {
           balance: parseFloat(createForm.balance),
           housing: createForm.housing,
           loan: createForm.loan,
+          contact: createForm.contact,
         }),
       });
 
@@ -217,6 +223,7 @@ const CustomerManagementPage = () => {
             balance: parseFloat(editForm.balance),
             housing: editForm.housing,
             loan: editForm.loan,
+            contact: editForm.contact,
           }),
         }
       );
@@ -277,6 +284,7 @@ const CustomerManagementPage = () => {
       balance: customer.balance.toString(),
       housing: customer.housing,
       loan: customer.loan,
+      contact: customer.contact || "",
     });
     setEditDialogOpen(true);
   };
@@ -487,6 +495,18 @@ const CustomerManagementPage = () => {
                     </div>
 
                     <div className="space-y-2">
+                      <Label htmlFor="create-contact">Kontak</Label>
+                      <Input
+                        id="create-contact"
+                        placeholder="081234567890"
+                        value={createForm.contact}
+                        onChange={(e) =>
+                          setCreateForm({ ...createForm, contact: e.target.value })
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
                       <Label htmlFor="create-default">Default</Label>
                       <Select
                         value={createForm.has_default}
@@ -660,8 +680,20 @@ const CustomerManagementPage = () => {
                           </span>
                           <span className="text-gray-300">•</span>
                           <span>{formatCurrency(customer.balance)}</span>
+                          {customer.contact && (
+                            <>
+                              <span className="text-gray-300">•</span>
+                              <span>{customer.contact}</span>
+                            </>
+                          )}
                         </div>
                         <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-2">
+                          {customer.contact && (
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3" />
+                              {customer.contact}
+                            </span>
+                          )}
                           {customer.housing === "yes" && (
                             <span className="flex items-center gap-1">
                               <Home className="w-3 h-3" />
@@ -856,6 +888,18 @@ const CustomerManagementPage = () => {
                     setEditForm({ ...editForm, balance: e.target.value })
                   }
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-contact">Kontak</Label>
+                <Input
+                  id="edit-contact"
+                  placeholder="081234567890"
+                  value={editForm.contact}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, contact: e.target.value })
+                  }
                 />
               </div>
 

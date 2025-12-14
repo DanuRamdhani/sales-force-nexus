@@ -112,6 +112,7 @@ const LeadDetailPage = () => {
           housing: data.lead.housing,
           loan: data.lead.loan,
           has_default: data.lead.has_default,
+          contact: data.lead.contact,
         },
         score: {
           score: parseFloat(data.latestScore.score),
@@ -541,6 +542,30 @@ const LeadDetailPage = () => {
                       </p>
                     </div>
                   </div>
+
+                  {customer.contact && (
+                    <div className="flex items-center gap-3 text-gray-700">
+                      <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <Phone className="w-4 h-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-gray-500">Kontak</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{customer.contact}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(`tel:${customer.contact}`, '_self')}
+                            className="h-6 px-2 text-xs bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                            title="Panggil customer"
+                          >
+                            <Phone className="w-3 h-3 mr-1" />
+                            Panggil
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
