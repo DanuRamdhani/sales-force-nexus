@@ -4,7 +4,7 @@ import "./styles/App.css";
 import LoginPage from "./pages/LoginPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import LeadDetailPage from "./pages/LeadDetailPage.jsx";
-import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
+import AdmindashboardPage from "./pages/AdmindashboardPage.jsx";
 import SalesManagementPage from "./pages/SalesManagementPage.jsx";
 import CustomerManagementPage from "./pages/CustomerManagementPage.jsx";
 import CustomerDetailPage from "./pages/CustomerDetailPage.jsx";
@@ -43,7 +43,7 @@ function App() {
           path="/admin"
           element={
             <RequireAdmin>
-              <AdminDashboardPage />
+              <AdmindashboardPage />
             </RequireAdmin>
           }
         />
