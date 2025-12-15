@@ -72,7 +72,7 @@ const CustomerDetailPage = () => {
     last_contact_date: "",
     campaign: "1",
     previous_contacts: "0",
-    prev_outcome: "unknown",
+    prev_outcome: "nonexistent",
     status: "new",
   });
 
@@ -147,7 +147,7 @@ const CustomerDetailPage = () => {
         last_contact_date: "",
         campaign: "1",
         previous_contacts: "0",
-        prev_outcome: "unknown",
+        prev_outcome: "nonexistent",
         status: "new",
       });
       await fetchCustomerDetail();
@@ -342,7 +342,9 @@ const CustomerDetailPage = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value="nonexistent">
+                            Nonexistent
+                          </SelectItem>
                           <SelectItem value="success">Success</SelectItem>
                           <SelectItem value="failure">Failure</SelectItem>
                         </SelectContent>

@@ -203,7 +203,8 @@ const LeadManagementPage = () => {
       });
       console.log(response.body);
       const createData = await response.json();
-      if (!response.ok) throw new Error(createData.message || "Gagal membuat score");
+      if (!response.ok)
+        throw new Error(createData.message || "Gagal membuat score");
       toast.success("Score ML berhasil ditambahkan");
       await fetchLeadDetail();
     } catch (error) {
@@ -743,10 +744,10 @@ const LeadManagementPage = () => {
                   <span>
                     {lead.last_contact_date
                       ? format(
-                        new Date(lead.last_contact_date),
-                        "dd MMM yyyy",
-                        { locale: id }
-                      )
+                          new Date(lead.last_contact_date),
+                          "dd MMM yyyy",
+                          { locale: id }
+                        )
                       : "-"}
                   </span>
                 </div>
@@ -767,7 +768,7 @@ const LeadManagementPage = () => {
               <div className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border">
                 <p className="text-xs text-gray-500 mb-1">Hasil Sebelumnya</p>
                 <div className="text-gray-900 capitalize">
-                  {lead.prev_outcome ?? "unknown"}
+                  {lead.prev_outcome ?? "nonexistent"}
                 </div>
               </div>
 
